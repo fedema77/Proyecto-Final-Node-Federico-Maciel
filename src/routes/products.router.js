@@ -6,7 +6,7 @@ const router = Router();
 
 router.get('/products', getAllProducts);
 
-router.get('products/search', searchProducts);
+router.get('/products/search', searchProducts);
 
 router.get('/products/:id', searchProductById);
 

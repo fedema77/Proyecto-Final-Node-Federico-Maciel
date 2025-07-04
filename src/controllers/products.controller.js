@@ -1,4 +1,4 @@
-import * as service from '../services/products.service.js';
+import * as service from '../services/products.services.js';
 
 export const getAllProducts = (req, res) => {
     res.json(service.getAllProducts());
@@ -6,14 +6,18 @@ export const getAllProducts = (req, res) => {
 
 export const searchProducts = (req, res) => {
   const { nombre } = req.query;
-  const filteredProducts = products.filter(p => p.nombre.toLowerCase().includes(nombre.toLowerCase()));
-  res.json(filteredProducts);
-  console.log(req.method, req.url);
+
+  if (!nombre) {
+    return res.status(400).json({ error: "Falta el parámetro 'nombre' en la query" });
+  }
+
+  const results = service.searchProducts(nombre);
+  res.json(results);
 }
 
 export const searchProductById = (req, res) => {
   const productId = parseInt(req.params.id);
-  const product = products.find(p => p.id === productId);
+  const product = service.searchProductById(productId);
   if (product) {
     res.json(product);
   } else {
@@ -22,39 +26,30 @@ export const searchProductById = (req, res) => {
   console.log(req.method, req.url);
 }
 
-export const createProduct = (req, res) => {
-  const { name, price } = req.body;
-  const newProduct = {
-    id: products.length + 1,
-    name,
-    price
-  };
-
-  products.push(newProduct);
+export const createProduct = ((req, res) => {
+  const { name, price, categories } = req.body;
+  const newProduct = service.createProduct({ name, price, categories });
   res.status(201).json(newProduct);
-}
+});
 
 export const updateProductById = (req, res) => {
-  const productId = parseInt(req.params.id);
-  const { name, price } = req.body;
-  const productIndex = products.findIndex(p => p.id === productId);
+  const productId = parseInt(req.params.id, 10);
+  const { name, price, categories } = req.body;
+  const productIndex = service.updateProductById(productId, { name, price, categories });
 
-  if (productIndex !== -1) {
-    products[productIndex] = { id: productId, name, price };
-    res.json(products[productIndex]);
+  if (productIndex) {
+    res.json(productIndex);
   } else {
     res.status(404).send('Producto no encontrado');
   }
 }
 
 export const deleteProductById = (req, res) => {
-  const productId = parseInt(req.params.id);
-  const productIndex = products.findIndex(p => p.id === productId);
-
-  if (productIndex !== -1) {
-    products.splice(productIndex, 1);
+  const productId = parseInt(req.params.id, 10);
+  const product = service.deleteProductById(productId);
+  if (product) {
     res.status(204).send();
   } else {
     res.status(404).send('Producto no encontrado');
-  }
+  }  
 }
