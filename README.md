@@ -1,15 +1,18 @@
 # 🛠 Proyecto Final Node.js - API de Productos
 
-Este proyecto es una API RESTful desarrollada en Node.js que gestiona un catálogo de productos. Utiliza una arquitectura modular basada en controladores, servicios y modelos, y almacena los datos en un archivo JSON.
+Este proyecto es una API RESTful desarrollada en Node.js que gestiona un catálogo de productos. Utiliza una arquitectura modular basada en controladores, servicios y modelos, y almacena los datos en **Firestore**, la base de datos NoSQL de Firebase.
+
 
 ## 🚀 Tecnologías utilizadas
 
 - Node.js
 - Express
-- File System (fs)
-- JSON como base de datos local
+- Firebase SDK
+- Firestore como base de datos
 - CORS
 - ESM (ECMAScript Modules)
+- Dotenv para variables de entorno
+
 
 ## 📁 Estructura del proyecto
 
@@ -20,7 +23,7 @@ src/
 │ └── products.service.js 
 ├── models/ 
 │ ├── products.model.js 
-│ └── products.json 
+│ └── data.js
 ├── routes/ 
 │ └── products.router.js index.js
 
@@ -29,38 +32,67 @@ src/
 
 - **Controladores**: manejan las peticiones HTTP y delegan la lógica.
 - **Servicios**: contienen la lógica de negocio y validaciones.
-- **Modelos**: acceden directamente al archivo `products.json` para leer y escribir datos.
+- **Modelos**: interactúan con Firebase Firestore para leer, crear, modificar o eliminar documentos.
+
 
 ## 📡 Endpoints disponibles
 
-| Método | Ruta                    | Descripción                          |
-|--------|-------------------------|--------------------------------------|
-| GET    | `/api/products`         | Obtener todos los productos          |
-| GET    | `/api/products/:id`     | Obtener un producto por su ID        |
-| GET    | `/api/products?nombre=` | Buscar productos por nombre          |
-| POST   | `/api/products`         | Crear un nuevo producto              |
-| PUT    | `/api/products/:id`     | Actualizar un producto existente     |
-| DELETE | `/api/products/:id`     | Eliminar un producto por su ID       |
+| Método | Ruta                         | Descripción                          |
+|--------|------------------------------|--------------------------------------|
+| GET    | `/api/products`              | Obtener todos los productos          |
+| GET    | `/api/products/:id`          | Obtener un producto por su ID        |
+| GET    | `/api/products/search?name=` | Buscar productos por nombre          |
+| POST   | `/api/products`              | Crear un nuevo producto              |
+| PUT    | `/api/products/:id`          | Actualizar un producto existente     |
+| DELETE | `/api/products/:id`          | Eliminar un producto por su ID       |
 
 ## 📦 Formato de producto
 
-JSON
+```JSON
 {
-  "id": 1,
   "name": "Campera impermeable",
   "price": 12000,
   "categories": ["ropa", "paraguas"]
 }
+```
+🔐 El campo id se genera automáticamente por Firestore o puede ser especificado en operaciones PUT.
+
+## ▶️ Configuración Firebase
+
+Agregá tu archivo .env con las siguientes variables:
+```shell
+FIREBASE_API_KEY=xxx
+FIREBASE_AUTH_DOMAIN=xxx
+FIREBASE_PROJECT_ID=xxx
+FIREBASE_STORAGE_BUCKET=xxx
+FIREBASE_MESSAGING_SENDER_ID=xxx
+FIREBASE_APP_ID=xxx
+FIREBASE_MEASUREMENT_ID=xxx
+```
+Tu archivo data.js toma estas variables para iniciar la app de Firebase.
 
 ## ▶️ Cómo ejecutar el proyecto
 
-1. Clonar el repositorio
-2. Instalar dependencias:
-        _ bash
-        _ npm install
-3. Ejecutar el servidor:
-        _ npm run dev
-4. Acceder a la API en: http://localhost:3000/api/products
+- 1. Cloná el repositorio:
+```shell
+git clone https://github.com/tuusuario/api-productos-node.git
+cd api-productos-node
+```
+
+- 2. Instalá las dependencias:
+```shell
+npm install
+```
+
+- 3. Ejecutá el servidor en modo desarrollo:
+```shell
+npm run dev
+```
+
+- 4. Accedé a la API:
+```shell
+http://localhost:3000/api/products
+```
 
 ## ✍️ Autor
 Federico Maciel Proyecto final - Talento Tech Node.js 2025

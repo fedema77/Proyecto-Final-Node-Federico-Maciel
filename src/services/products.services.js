@@ -1,28 +1,28 @@
 import * as model from '../models/products.model.js';
 
-export const getAllProducts = () => {
-  return model.getAllProducts();
+export const getAllProducts = async () => {
+  return await model.getAllProducts();
 };
 
-export const searchProducts = (nombre) => {
-  const allProducts = model.getAllProducts();
+export const searchProducts = async (nombre) => {
+  const allProducts = await model.getAllProducts();
   return allProducts.filter(product =>
     product.name.toLowerCase().includes(nombre.toLowerCase())
   );
 };
 
-export const searchProductById = (id) => {
-  return model.getProductsById(id);
+export const searchProductById = async (id) => {
+  return await model.getProductsById(id);
 }
 
-export const createProduct = ({ name, price, categories }) => {
-  return model.createProduct({ name, price, categories });
+export const createProduct = async ({ name, price, categories }) => {
+  return await model.createProduct({ name, price, categories });
 };
 
-export const updateProductById = (id, data) => {
-  return model.updateProductById(id, data);
+export const updateProductById = async (id, data) => {
+  return await model.updateProductById(id, data);
 };
 
-export const deleteProductById = (id) => {
-  return model.deleteProductById(id);
+export const deleteProductById = async (id) => {
+  return await model.deleteProductById(id);
 };

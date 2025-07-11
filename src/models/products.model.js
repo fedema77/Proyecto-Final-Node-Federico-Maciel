@@ -1,52 +1,70 @@
-import fs from 'fs';
-import path from 'path';
+import {db} from './data.js';
+import {
+    collection,
+    doc,
+    getDoc,
+    getDocs,
+    addDoc,
+    deleteDoc,
+    updateDoc
+} from 'firebase/firestore';
 
-// dirección del archivo JSON
-const __dirname = import.meta.dirname;
+const productsCollection = collection(db, 'products');
 
-const filePath = path.join(__dirname, '../models/products.json');
-
-const json = fs.readFileSync(filePath, "utf-8");
-
-const products = JSON.parse(json);
-
-export const getAllProducts = () => {
-  return products;
+export const getAllProducts = async () => {
+  try {
+    const snapshot = await getDocs(productsCollection);
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  } catch (error) {
+    console.error("Error al obtener los productos:", error);
+  }
 }
 
-export const getProductsById = (id) => {
-  return products.find(product => product.id === id);
+export const getProductsById = async (id) => {
+  try {
+    const productRef = doc(db, 'products', id);
+    const productSnapshot = await getDoc(productRef);
+    return productSnapshot.exists() ? { id: productSnapshot.id, ...productSnapshot.data() } : null;
+  } catch (error) {
+    console.error("Error al obtener el producto por ID:", error);
+  }
 }
 
-export const createProduct = (data) => {
-  const newProduct = {
-    id: products.length + 1,
-    ...data
-  };
-
-  products.push(newProduct);
-  fs.writeFileSync(filePath, JSON.stringify(products));
-  return newProduct;
+export const createProduct = async (data) => {
+    try {
+        const docRef = await addDoc(productsCollection, data);
+        return { id: docRef.id, ...data };
+    } catch (error) {
+        console.error("Error al crear el producto:", error);
+    }
 }
 
-export const updateProductById = (id, { name, price, categories }) => {
-  const index = products.findIndex(product => product.id === id);
-
-  if (index !== -1) {
-    products[index] = { id, name, price, categories };
-    fs.writeFileSync(filePath, JSON.stringify(products));
-    return products[index];
+export const updateProductById = async (id, data) => {
+  if (typeof id !== 'string') {
+    console.error("ID inválido:", id);
+    return null;
   }
 
-  return null;
-};
+  try {
+        const productRef = doc(db, 'products', String(id));
+        await updateDoc(productRef, data);
+        return { id, ...data };
+  } catch (error) {
+        console.error("Error al actualizar el producto:", error);
+        return null;
+  }
+}
 
-export const deleteProductById = (id) => {
-    const productIndex = products.findIndex(product => product.id === id);
-    
-    if (productIndex !== -1) {
-        products.splice(productIndex, 1);
-        return true;
+export const deleteProductById = async (id) => {
+  try {
+    const productRef = doc(db, 'products', id);
+    const snapshot = await getDoc(productRef);
+    if (!snapshot.exists()) {
+      return false;
     }
-    return false;
-};
+    await deleteDoc(productRef);
+    return true;
+  } catch (error) {
+    console.error("Error al eliminar el producto:", error);
+  }
+}

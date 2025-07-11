@@ -1,52 +1,51 @@
 import * as service from '../services/products.services.js';
 
-export const getAllProducts = (req, res) => {
-    res.json(service.getAllProducts());
+export const getAllProducts = async (req, res) => {
+    res.json(await service.getAllProducts());
 };
 
-export const searchProducts = (req, res) => {
-  const { nombre } = req.query;
+export const searchProducts = async (req, res) => {
+  const { name } = req.query;
 
-  if (!nombre) {
-    return res.status(400).json({ error: "Falta el parámetro 'nombre' en la query" });
+  if (!name) {
+    return res.status(400).json({ error: "Falta el parámetro 'name' en la query" });
   }
 
-  const results = service.searchProducts(nombre);
+  const results = await service.searchProducts(name);
   res.json(results);
 }
 
-export const searchProductById = (req, res) => {
-  const productId = parseInt(req.params.id);
-  const product = service.searchProductById(productId);
+export const searchProductById = async (req, res) => {
+  const productId = req.params.id;
+  const product = await service.searchProductById(productId);
   if (product) {
     res.json(product);
   } else {
     res.status(404).send('Producto no encontrado');
   }
-  console.log(req.method, req.url);
 }
 
-export const createProduct = ((req, res) => {
+export const createProduct = (async (req, res) => {
   const { name, price, categories } = req.body;
-  const newProduct = service.createProduct({ name, price, categories });
+  const newProduct = await service.createProduct({ name, price, categories });
   res.status(201).json(newProduct);
 });
 
-export const updateProductById = (req, res) => {
-  const productId = parseInt(req.params.id, 10);
+export const updateProductById = async (req, res) => {
+  const productId = req.params.id;
   const { name, price, categories } = req.body;
-  const productIndex = service.updateProductById(productId, { name, price, categories });
+  const updatedProduct = await service.updateProductById(productId, { name, price, categories });
 
-  if (productIndex) {
-    res.json(productIndex);
+  if (updatedProduct) {
+    res.json(updatedProduct);
   } else {
-    res.status(404).send('Producto no encontrado');
+    res.status(404).send('Producto no encontrado o no se pudo actualizar');
   }
 }
 
-export const deleteProductById = (req, res) => {
-  const productId = parseInt(req.params.id, 10);
-  const product = service.deleteProductById(productId);
+export const deleteProductById = async (req, res) => {
+  const productId = req.params.id;
+  const product = await service.deleteProductById(productId);
   if (product) {
     res.status(204).send();
   } else {
