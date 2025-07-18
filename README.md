@@ -1,32 +1,75 @@
 # 🛠 Proyecto Final Node.js - API de Productos
 
-Este proyecto es una API RESTful desarrollada en Node.js que gestiona un catálogo de productos. Utiliza una arquitectura modular basada en controladores, servicios y modelos, y almacena los datos en **Firestore**, la base de datos NoSQL de Firebase.
+Este proyecto es una API RESTful desarrollada en Node.js para gestionar un catálogo de productos. Incluye autenticación con **JWT** mediante un identificador de usuario con email y contraseña. Los datos se almacenan en **Firestore**, la base de datos NoSQL de Firebase. El proyecto está desplegado en **Vercel** y accesible públicamente.
+
+🔗 URL del proyecto: [API en Vercel](https://proyecto-final-node-federico-maciel.vercel.app)
 
 
 ## 🚀 Tecnologías utilizadas
 
-- Node.js
-- Express
-- Firebase SDK
-- Firestore como base de datos
-- CORS
-- ESM (ECMAScript Modules)
-- Dotenv para variables de entorno
+- Node.js + Express
+- Firebase SDK + Firestore
+- Autenticación con JSON Web Tokens (JWT)
+- CORS + Dotenv + ESM Modules
+- Vercel para despliegue
 
 
+## 🔐 Autenticación
+
+El login se realiza mediante una ruta protegida que valida credenciales estáticas:
+
+```js
+const default_user = {
+  id: 1,
+  email: "jwt@jwt.com",
+  password: "jwt100%"
+};
+```
+
+## 📮 Endpoint de Login
+| Método   |      Ruta      |  Descripción |
+|----------|:--------------:|-------------:|
+| POST |  /api/login | Genera un token JWT con email y password |
+
+✅ Datos esperados en el body:
+```
+{
+  "email": "jwt@jwt.com",
+  "password": "jwt100%"
+}
+```
+
+📦 Respuesta exitosa:
+```
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5..."
+}
+```
+Este token se utiliza para acceder a las rutas protegidas. Se debe enviar en el header:
+```
+{
+  Authorization: Bearer <token>
+}
+```
 ## 📁 Estructura del proyecto
 
+```
 src/
-├── controllers/ 
-│ └── products.controller.js 
-├── services/ 
-│ └── products.service.js 
-├── models/ 
-│ ├── products.model.js 
-│ └── data.js
-├── routes/ 
-│ └── products.router.js index.js
-
+├── controllers/
+│   ├── auth.controller.js
+│   └── products.controller.js
+├── middleware/
+│   └── auth.middleware.js
+├── services/
+│   └── products.service.js
+├── models/
+│   ├── products.model.js
+│   └── data.js
+├── routes/
+│   ├── auth.router.js
+│   └── products.router.js
+├── index.js
+```
 
 ## 🧠 Arquitectura
 
@@ -36,6 +79,7 @@ src/
 
 
 ## 📡 Endpoints disponibles
+Todas las rutas de productos requieren autenticación JWT:
 
 | Método | Ruta                         | Descripción                          |
 |--------|------------------------------|--------------------------------------|
@@ -57,7 +101,7 @@ src/
 ```
 🔐 El campo id se genera automáticamente por Firestore o puede ser especificado en operaciones PUT.
 
-## ▶️ Configuración Firebase
+## ▶️ Configuración de entorno
 
 Agregá tu archivo .env con las siguientes variables:
 ```shell
@@ -68,6 +112,7 @@ FIREBASE_STORAGE_BUCKET=xxx
 FIREBASE_MESSAGING_SENDER_ID=xxx
 FIREBASE_APP_ID=xxx
 FIREBASE_MEASUREMENT_ID=xxx
+JWT_SECRET=tu_clave_secreta_para_jwt
 ```
 Tu archivo data.js toma estas variables para iniciar la app de Firebase.
 
