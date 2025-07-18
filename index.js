@@ -1,6 +1,7 @@
 import "dotenv/config";
 import express from 'express';
 import cors from 'cors';
+import { auth } from './src/middleware.js/auth.middleware.js';
 const app = express();
 const port = process.env.PORT || 3001;
 
@@ -12,8 +13,11 @@ app.get('/', (req, res) => {
   console.log(req.method, req.url);
 });
 
+import authRouter from './src/routes/auth.router.js';
+app.use("/api", authRouter);
+
 import productsRouter from './src/routes/products.router.js';
-app.use("/api", productsRouter);
+app.use("/api", auth, productsRouter);
 
 app.use((req, res) => {
   res.status(404).json('Ruta no encontrada');
